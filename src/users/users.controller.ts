@@ -1,4 +1,4 @@
-﻿import { Body, Controller, Get, NotFoundException, Param, Post, Delete } from '@nestjs/common';
+﻿import { Body, Controller, Get, NotFoundException, Param, Post, Delete, Put } from '@nestjs/common';
 
 interface User {
   id: number;
@@ -66,5 +66,24 @@ export class UsersController {
     }
     this.users.splice(position, 1);
     return;
+  }
+
+  @Put(':id')
+  update(@Param('id') id: string, @Body() user: User) {
+    const userIndex = this.users.findIndex((user) => user.id === Number(id))
+
+    if (userIndex === -1) {
+      return { error: 'User not found' }
+    }
+
+    const originalUser = this.users[userIndex]
+
+    this.users[userIndex] = {
+      id: Number(id),
+      name: user.name || originalUser.name,
+      email: user.email || originalUser.email,
+    }
+
+    return this.users[userIndex]
   }
 }
